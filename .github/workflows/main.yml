@@ -17,7 +17,7 @@ jobs:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
         with:
-          egress-policy: audit
+          policy: my-production-policy
 
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -27,3 +27,7 @@ jobs:
 
       - name: Show current directory
         run: pwd
+
+      - name: Show current directory
+        run: ping facebook.com
+        
