@@ -13,6 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@v2
+        with:
+         use-policy-store: true
+         api-key: ${{ secrets.STEP_SECURITY_API_KEY }}
 
       
       - name: Checkout code
