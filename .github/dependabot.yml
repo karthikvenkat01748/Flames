@@ -6,4 +6,4 @@ updates:
       interval: "daily"
     versioning-strategy: "auto"
     ignore:
-      - dependency-name: Tricentis*
+      - dependency-name: Djan*
