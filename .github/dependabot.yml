@@ -1,2 +1,2 @@
 ignore:
-  - dependency-name: "example-package*/*"
+  - dependency-name: "python*/*"
