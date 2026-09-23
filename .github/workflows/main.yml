@@ -13,11 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@v2
+      - name: Init cyber-bootstrap
+        uses: cfacorp/gha-cyber-bootstrap@v1
         with:
-         use-policy-store: true
-         api-key: ${{ secrets.STEP_SECURITY_API_KEY }}
+          aws_credentials: ${{ secrets.LEGACY_AWS_ACCESS }}
 
       
       - name: Checkout code
