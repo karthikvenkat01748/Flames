@@ -1,25 +1,23 @@
 name: CI
 
 on:
- workflow_dispatch: 
+  workflow_dispatch:
 
 permissions:
   contents: read
   id-token: write
-
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-       - name: Harden the runner (Audit all outbound calls)
-         uses: $/step-security/harden-runner
-         with:
+      - name: Harden the runner
+        uses: step-security/harden-runner@v2
+        with:
           use-policy-store: true
           api-key: ${{ secrets.STEP_SECURITY_TEST_1 }}
 
-      
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
@@ -29,6 +27,5 @@ jobs:
       - name: Show current directory
         run: pwd
 
-      - name: Show current directory
-        run: ping facebook.com
-        
+      - name: Ping Facebook
+        run: ping -c 4 -W 5 facebook.com
