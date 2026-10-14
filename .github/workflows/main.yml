@@ -17,7 +17,7 @@ jobs:
          uses: $/step-security/harden-runner
          with:
           use-policy-store: true
-          api-key: ${{ secrets.STEP_SECURITY_API_KEY }}
+          api-key: ${{ secrets.STEP_SECURITY_TEST_1 }}
 
       
       - name: Checkout code
