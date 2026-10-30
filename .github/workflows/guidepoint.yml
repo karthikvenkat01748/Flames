@@ -1,4 +1,4 @@
-name: Private Key Log Detection Test
+name: "Private key in build log POC"
 
 on:
   workflow_dispatch:
@@ -16,11 +16,11 @@ permissions:
   contents: read
 
 jobs:
+  # Disposable EC private key printed to the build log.
   private-key:
     name: "Private key in build log"
     if: inputs.test_case == 'all' || inputs.test_case == 'private-key'
     runs-on: ubuntu-latest
-
     steps:
       - uses: step-security/harden-runner@v2
         with:
@@ -30,21 +30,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
-          KEY_FILE="$(mktemp "$RUNNER_TEMP/dummy-private-key.XXXXXX.pem")"
-          trap 'rm -f "$KEY_FILE"' EXIT
+          umask 077
+          key_file="$(mktemp)"
+          trap 'rm -f "$key_file"' EXIT
 
           openssl genpkey \
-            -algorithm RSA \
-            -pkeyopt rsa_keygen_bits:2048 \
-            -out "$KEY_FILE" \
-            2>/dev/null
+            -algorithm EC \
+            -pkeyopt ec_paramgen_curve:prime256v1 \
+            -pkeyopt ec_param_enc:named_curve \
+            -out "$key_file"
 
           echo "Private key content (freshly generated dummy, NOT a real credential):"
-          cat "$KEY_FILE"
-
-          {
-            echo "| Test case | Action | Verification |"
-            echo "| --- | --- | --- |"
-            echo "| private-key | dummy RSA key printed to log | check dashboard for secret detection |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          cat "$key_file"
+          echo "| private-key | dummy EC key printed to log | check dashboard for secret detection |" >> "$GITHUB_STEP_SUMMARY"
