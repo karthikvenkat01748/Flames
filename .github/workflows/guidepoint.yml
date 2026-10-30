@@ -1,0 +1,50 @@
+name: Private Key Log Detection Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_case:
+        description: "Test case to run"
+        required: true
+        default: private-key
+        type: choice
+        options:
+          - all
+          - private-key
+
+permissions:
+  contents: read
+
+jobs:
+  private-key:
+    name: "Private key in build log"
+    if: inputs.test_case == 'all' || inputs.test_case == 'private-key'
+    runs-on: pdo-sandbox-dind-runner
+
+    steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: Generate and print a dummy private key
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          KEY_FILE="$(mktemp "$RUNNER_TEMP/dummy-private-key.XXXXXX.pem")"
+          trap 'rm -f "$KEY_FILE"' EXIT
+
+          openssl genpkey \
+            -algorithm RSA \
+            -pkeyopt rsa_keygen_bits:2048 \
+            -out "$KEY_FILE" \
+            2>/dev/null
+
+          echo "Private key content (freshly generated dummy, NOT a real credential):"
+          cat "$KEY_FILE"
+
+          {
+            echo "| Test case | Action | Verification |"
+            echo "| --- | --- | --- |"
+            echo "| private-key | dummy RSA key printed to log | check dashboard for secret detection |"
+          } >> "$GITHUB_STEP_SUMMARY"
