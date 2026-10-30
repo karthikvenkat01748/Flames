@@ -19,7 +19,7 @@ jobs:
   private-key:
     name: "Private key in build log"
     if: inputs.test_case == 'all' || inputs.test_case == 'private-key'
-    runs-on: pdo-sandbox-dind-runner
+    runs-on: ubuntu-latest
 
     steps:
       - uses: step-security/harden-runner@v2
