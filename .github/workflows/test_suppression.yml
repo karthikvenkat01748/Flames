@@ -1,0 +1,30 @@
+name: Suspicious process detection test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  suspicious-process-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden-Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@v4
+
+      # 1. Privileged container process
+      - name: Run a privileged container
+        run: |
+          docker run --rm --privileged alpine:3.20 sh -c "echo privileged container test; id"
+
+      # 2. Reverse shell style process, to a listener on this same runner
+      - name: Reverse shell pattern against localhost
+        run: |
+          (nc -l 127.0.0.1 4444 >/dev/null 2>&1 &) 
+          sleep 2
+          timeout 5 bash -c 'bash -i >& /dev/tcp/127.0.0.1/4444 0>&1' || true
